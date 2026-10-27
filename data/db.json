@@ -208,9 +208,9 @@
       "whiteUrl": "https://aimedialab.online/video-ia",
       "offerUrl": "https://aimedialab.online",
       "active": true,
-      "clicksTotal": 546,
+      "clicksTotal": 547,
       "clicksReal": 78,
-      "clicksBlocked": 468,
+      "clicksBlocked": 469,
       "allowedCountries": [],
       "allowedLanguages": [],
       "allowedOs": [],
@@ -235,7 +235,7 @@
       "warmupMode": false,
       "warmupDuration": 60,
       "createdAt": "2026-10-25T17:09:22.514Z",
-      "updatedAt": "2026-10-26T09:23:48.123Z"
+      "updatedAt": "2026-10-27T05:50:26.409Z"
     },
     {
       "id": "cmvnms5ee0035u7n74vv9w68z",
@@ -325,6 +325,21 @@
     }
   ],
   "clicks": [
+    {
+      "id": "clk_f1ec0c9b8a2f5cc7fb60",
+      "campaignId": "cmvo31k9e003vu7n7wz2bkpky",
+      "ip": "::1",
+      "country": "BR",
+      "language": "pt-BR",
+      "os": "Other",
+      "isp": "Provedor Residencial",
+      "userAgent": "curl/8.7.1",
+      "isReal": false,
+      "blockedReason": "bot_ua:curl/",
+      "referer": null,
+      "params": {},
+      "createdAt": "2026-10-27T05:50:26.407Z"
+    },
     {
       "id": "GtiAoecwviHsN0JVBWLfP",
       "campaignId": "cmvo31k9e003vu7n7wz2bkpky",

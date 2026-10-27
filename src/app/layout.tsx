@@ -3,8 +3,13 @@ import './globals.css';
 import { Providers } from '@/components/Providers';
 
 export const metadata: Metadata = {
-  title: 'Cloakby — Plataforma de Cloaking & Criativos',
-  description: 'Plataforma completa de Cloaking com motor FFmpeg de criativos, camuflagem de texto e cloaker em tempo real.',
+  title: 'CLOAKERME — Plataforma de Cloaking & Criativos',
+  description: 'Plataforma de alta performance para Cloaking de Campanhas, Camuflagem de Criativos em Vídeo e Proteção de Tráfego.',
+  icons: {
+    icon: '/brand/logo-icon-transparent.png',
+    shortcut: '/brand/logo-icon-transparent.png',
+    apple: '/brand/logo-icon-transparent.png',
+  },
 };
 
 export default function RootLayout({

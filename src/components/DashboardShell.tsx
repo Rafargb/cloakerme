@@ -200,16 +200,22 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             isCollapsedView ? 'justify-center px-2' : 'justify-between px-4'
           }`}
         >
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#f97316] to-[#ea580c] shadow-[0_0_18px_-4px_rgba(249,115,22,0.7)]">
-              <span className="font-display text-lg font-bold tracking-wider text-white">C</span>
-            </div>
-            {!isCollapsedView && (
-              <div className="flex items-center gap-1.5">
-                <span className="font-display text-2xl tracking-[0.08em] text-white">CLOAKBY</span>
-                <span className="rounded bg-[#f97316]/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-orange-400 border border-[#f97316]/30">
-                  LOCAL
-                </span>
+          <Link href="/dashboard" className="flex items-center">
+            {isCollapsedView ? (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center">
+                <img
+                  src="/brand/logo-icon-transparent.png"
+                  alt="CLOAKERME"
+                  className="h-8 w-8 object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.25)]"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center py-1">
+                <img
+                  src="/brand/logo-horizontal-dark.png"
+                  alt="CLOAKERME"
+                  className="h-7 w-auto max-w-[190px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+                />
               </div>
             )}
           </Link>
