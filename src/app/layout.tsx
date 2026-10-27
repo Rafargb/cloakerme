@@ -6,9 +6,15 @@ export const metadata: Metadata = {
   title: 'CLOAKERME — Plataforma de Cloaking & Criativos',
   description: 'Plataforma de alta performance para Cloaking de Campanhas, Camuflagem de Criativos em Vídeo e Proteção de Tráfego.',
   icons: {
-    icon: '/brand/logo-icon-transparent.png',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/brand/logo-icon-transparent.png', sizes: '512x512', type: 'image/png' },
+    ],
     shortcut: '/brand/logo-icon-transparent.png',
-    apple: '/brand/logo-icon-transparent.png',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
 };
 

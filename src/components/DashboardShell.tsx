@@ -202,19 +202,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         >
           <Link href="/dashboard" className="flex items-center">
             {isCollapsedView ? (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center">
                 <img
                   src="/brand/logo-icon-transparent.png"
                   alt="CLOAKERME"
-                  className="h-8 w-8 object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.25)]"
+                  className="h-9 w-9 object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.25)] transition-transform hover:scale-105"
                 />
               </div>
             ) : (
               <div className="flex items-center py-1">
                 <img
-                  src="/brand/logo-horizontal-dark.png"
+                  src="/brand/logo-horizontal-transparent.png"
                   alt="CLOAKERME"
-                  className="h-7 w-auto max-w-[190px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+                  className="h-10 sm:h-11 w-auto max-w-[205px] object-contain drop-shadow-[0_0_16px_rgba(255,255,255,0.18)] transition-all hover:opacity-95"
                 />
               </div>
             )}
