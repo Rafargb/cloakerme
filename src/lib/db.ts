@@ -142,16 +142,24 @@ export interface DatabaseSchema {
   } | null;
 }
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY);
+const DATA_DIR = IS_SERVERLESS ? path.join("/tmp", "cloakby_data") : path.join(process.cwd(), "data");
 const UPLOADS_DIR = path.join(DATA_DIR, "uploads");
 const DB_FILE = path.join(DATA_DIR, "db.json");
+const BUNDLED_DB_FILE = path.join(process.cwd(), "data", "db.json");
+
+let memoryDb: DatabaseSchema | null = null;
 
 export function ensureDirectories() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(UPLOADS_DIR)) {
+      fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+    }
+  } catch (e) {
+    // Read-only filesystem fallback
   }
 }
 
@@ -427,22 +435,41 @@ const INITIAL_DB: DatabaseSchema = {
 };
 
 export function readDb(): DatabaseSchema {
+  if (memoryDb) {
+    return memoryDb;
+  }
   ensureDirectories();
-  if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(INITIAL_DB, null, 2), "utf-8");
-    return structuredClone(INITIAL_DB);
-  }
   try {
-    const raw = fs.readFileSync(DB_FILE, "utf-8");
-    return JSON.parse(raw) as DatabaseSchema;
-  } catch {
-    return structuredClone(INITIAL_DB);
-  }
+    if (fs.existsSync(DB_FILE)) {
+      const raw = fs.readFileSync(DB_FILE, "utf-8");
+      memoryDb = JSON.parse(raw) as DatabaseSchema;
+      return memoryDb;
+    }
+    if (fs.existsSync(BUNDLED_DB_FILE)) {
+      const raw = fs.readFileSync(BUNDLED_DB_FILE, "utf-8");
+      memoryDb = JSON.parse(raw) as DatabaseSchema;
+      try {
+        fs.writeFileSync(DB_FILE, raw, "utf-8");
+      } catch {}
+      return memoryDb;
+    }
+  } catch {}
+
+  memoryDb = structuredClone(INITIAL_DB);
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(INITIAL_DB, null, 2), "utf-8");
+  } catch {}
+  return memoryDb;
 }
 
 export function writeDb(db: DatabaseSchema): void {
+  memoryDb = db;
   ensureDirectories();
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), "utf-8");
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), "utf-8");
+  } catch (err) {
+    // If running in restricted serverless container, memoryDb retains changes
+  }
 }
 
 export function generateId(prefix = "cmv"): string {
