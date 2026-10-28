@@ -242,7 +242,7 @@
       "ipsBlocked": [],
       "showWhiteUntil": null,
       "replicateMode": true,
-      "protectionLevel": "normal",
+      "protectionLevel": "black",
       "allowedDevices": "all",
       "deviceFilter": "ALL",
       "trackingDomain": "templates.aimedialab.online",
