@@ -372,7 +372,8 @@
       "changesCount": 1,
       "operationKey": "hOa2XiylnOJiTg6qOQhrpw",
       "createdAt": "2026-10-25T01:56:17.112Z",
-      "updatedAt": "2026-10-25T07:09:22.617Z"
+      "updatedAt": "2026-10-25T07:09:22.617Z",
+      "cnameTarget": "cname.vercel-dns.com"
     }
   ],
   "platformDomains": [

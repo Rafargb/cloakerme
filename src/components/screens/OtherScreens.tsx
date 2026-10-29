@@ -10,6 +10,8 @@ import { Button, Card, Input, ConfirmModal } from '@/components/ui/Primitives';
 import {
   Globe,
   CheckCircle2,
+  Clock,
+  AlertCircle,
   CreditCard,
   BookOpen,
   Video,
@@ -37,8 +39,9 @@ export function DomainsScreen() {
       hostname: string;
       status: string;
       cnameTarget: string;
-      verifiedAt: string | null;
-      lastError: string | null;
+      verifiedAt?: string | null;
+      lastError?: string | null;
+      errorMessage?: string | null;
       createdAt: string;
     }>
   >({
@@ -67,10 +70,15 @@ export function DomainsScreen() {
       const { data } = await axios.post(`/api/v1/domains/${id}/provision`);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (res: any) => {
       queryClient.invalidateQueries({ queryKey: ['domains'] });
-      toast.success(t('domains.toastVerified'));
+      if (res?.verified) {
+        toast.success(res?.message || t('domains.toastVerified'));
+      } else {
+        toast.warning(res?.message || 'Apontamento DNS ainda não detectado.');
+      }
     },
+    onError: () => toast.error('Falha ao verificar apontamento DNS.'),
   });
 
   const deleteMutation = useMutation({
@@ -140,14 +148,27 @@ export function DomainsScreen() {
                     <span className="font-mono text-sm font-semibold text-white break-all">
                       {d.hostname}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded border text-emerald-400 bg-emerald-500/15 border-emerald-500/30 inline-flex items-center gap-1">
-                      <CheckCircle2 className="h-3 w-3" />
-                      {t('domains.statusActive')}
-                    </span>
+                    {d.status === 'ACTIVE' ? (
+                      <span className="text-xs px-2 py-0.5 rounded border text-emerald-400 bg-emerald-500/15 border-emerald-500/30 inline-flex items-center gap-1 font-medium">
+                        <CheckCircle2 className="h-3 w-3" />
+                        {t('domains.statusActive')}
+                      </span>
+                    ) : (
+                      <span className="text-xs px-2 py-0.5 rounded border text-amber-400 bg-amber-500/15 border-amber-500/30 inline-flex items-center gap-1 font-medium">
+                        <Clock className="h-3 w-3" />
+                        {t('domains.statusPending')}
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-zinc-400">
-                    CNAME → <code className="text-orange-200 font-mono">{d.cnameTarget}</code>
+                    CNAME → <code className="text-orange-200 font-mono">{d.cnameTarget || 'cname.vercel-dns.com'}</code>
                   </p>
+                  {d.status !== 'ACTIVE' && d.errorMessage && (
+                    <p className="text-xs text-amber-300/90 mt-1 flex items-start gap-1 leading-snug">
+                      <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-400 mt-0.5" />
+                      <span>{d.errorMessage}</span>
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2 shrink-0">
                   <Button

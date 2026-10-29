@@ -13,3 +13,5 @@ data/uploads/cmv*.png
 extract-assets.cjs
 inspect-local-vids.cjs
 scan-all-frames.cjs
+
+tsconfig.tsbuildinfo

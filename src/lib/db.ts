@@ -470,6 +470,11 @@ export function writeDb(db: DatabaseSchema): void {
   } catch (err) {
     // If running in restricted serverless container, memoryDb retains changes
   }
+  try {
+    if (fs.existsSync(BUNDLED_DB_FILE) && BUNDLED_DB_FILE !== DB_FILE) {
+      fs.writeFileSync(BUNDLED_DB_FILE, JSON.stringify(db, null, 2), "utf-8");
+    }
+  } catch (err) {}
 }
 
 export function generateId(prefix = "cmv"): string {

@@ -30,24 +30,13 @@ export function enrichCampaign(c: any, db: ReturnType<typeof readDb>) {
   const customDomain = c.customDomainId
     ? db.domains.find((d) => d.id === c.customDomainId) || null
     : c.trackingDomain
-    ? db.domains.find((d) => (d.hostname || d.domain) === c.trackingDomain) || {
-        id: 'dom_custom',
-        domain: c.trackingDomain,
-        hostname: c.trackingDomain,
-        status: 'ACTIVE' as const,
-        errorMessage: null,
-        changesMonth: '',
-        changesCount: 0,
-        operationKey: '',
-        createdAt: '',
-        updatedAt: '',
-      }
+    ? db.domains.find((d) => (d.hostname || d.domain) === c.trackingDomain) || null
     : null;
 
   return {
     ...c,
     status: c.status || (c.active !== false ? 'ACTIVE' : 'PAUSED'),
-    adPlatform: c.adPlatform ?? c.platform ?? 'tiktok',
+    adPlatform: c.adPlatform ?? c.platform ?? 'meta',
     whitePageId: c.whitePageId || whitePage.id,
     blackPageId: c.blackPageId || blackPage.id,
     whitePage,
@@ -63,6 +52,18 @@ export function enrichCampaign(c: any, db: ReturnType<typeof readDb>) {
         : 'ALL'),
     blockBots: c.blockBots ?? c.autoCloak ?? true,
     blockDatacenter: c.blockDatacenter ?? true,
+    allowedCountries: c.allowedCountries || ['BR'],
+    blockedCountries: c.blockedCountries || [],
+    allowedLanguages: c.allowedLanguages || [],
+    blockedLanguages: c.blockedLanguages || [],
+    allowedOS: c.allowedOS || c.allowedOs || [],
+    allowedIPs: c.allowedIPs || c.ipsAllowed || [],
+    blockedIPs: c.blockedIPs || c.ipsBlocked || [],
+    requiredUrlTokens: c.requiredUrlTokens || c.tokensRequired || [],
+    blockedUrlTokens: c.blockedUrlTokens || c.tokensBlocked || [],
+    warmupClicks: c.warmupClicks ?? c.warmupDuration ?? 0,
+    whiteUntilHour: c.whiteUntilHour ?? null,
+    blackVariants: c.blackVariants || [],
     _count: {
       clicks: c.clicksTotal ?? 0,
     },
