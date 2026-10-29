@@ -5,20 +5,24 @@ import { readDb, writeDb } from "@/lib/db";
 const DEFAULT_CNAME_TARGET = process.env.VERCEL_CNAME_TARGET || 'cname.vercel-dns.com';
 
 async function checkDomainDns(domain: string): Promise<boolean> {
-  try {
-    const cnames = await dns.resolveCname(domain);
-    if (cnames.some((c) => c.toLowerCase().includes('vercel') || c.toLowerCase().includes('cname.vercel-dns.com'))) {
-      return true;
-    }
-  } catch (e) {
+  const timeoutPromise = new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 3000));
+  const checkPromise = (async () => {
     try {
-      const ips = await dns.resolve4(domain);
-      if (ips.includes('76.76.21.21')) {
+      const cnames = await dns.resolveCname(domain);
+      if (cnames.some((c) => c.toLowerCase().includes('vercel') || c.toLowerCase().includes('cname.vercel-dns.com'))) {
         return true;
       }
-    } catch (e2) {}
-  }
-  return false;
+    } catch (e) {
+      try {
+        const ips = await dns.resolve4(domain);
+        if (ips.includes('76.76.21.21')) {
+          return true;
+        }
+      } catch (e2) {}
+    }
+    return false;
+  })();
+  return Promise.race([checkPromise, timeoutPromise]);
 }
 
 export async function POST(

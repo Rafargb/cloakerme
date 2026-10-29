@@ -357,7 +357,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className="rounded-xl border border-[#f97316]/25 bg-gradient-to-br from-[#f97316]/10 via-[#121212] to-[#0c0c0c] p-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
-                  PLANO {user?.plan || 'GLOBAL'}
+                  PLANO ILIMITADO · VITALÍCIO
                 </span>
                 <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />

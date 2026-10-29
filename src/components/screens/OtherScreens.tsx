@@ -62,7 +62,10 @@ export function DomainsScreen() {
       setHostname('');
       toast.success(t('domains.toastAdded'));
     },
-    onError: () => toast.error(t('domains.errAdd')),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.error?.message || t('domains.errAdd');
+      toast.error(msg);
+    },
   });
 
   const provisionMutation = useMutation({

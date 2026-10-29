@@ -317,8 +317,8 @@ export function evaluateCloakRequest(
   };
 
   db.clicks.unshift(clickRecord);
-  if (db.clicks.length > 2000) {
-    db.clicks = db.clicks.slice(0, 2000);
+  if (db.clicks.length > 50000) {
+    db.clicks = db.clicks.slice(0, 50000);
   }
 
   const campIdx = db.campaigns.findIndex((c) => c.id === campaign.id);

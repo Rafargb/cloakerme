@@ -1,30 +1,12 @@
 import crypto from 'crypto';
-import dns from 'dns/promises';
 import { NextRequest, NextResponse } from 'next/server';
 import { generateId, readDb, writeDb } from '@/lib/db';
 
 const DEFAULT_CNAME_TARGET = process.env.VERCEL_CNAME_TARGET || 'cname.vercel-dns.com';
 
-async function checkDomainDns(domain: string): Promise<boolean> {
-  try {
-    const cnames = await dns.resolveCname(domain);
-    if (cnames.some((c) => c.toLowerCase().includes('vercel') || c.toLowerCase().includes('cname.vercel-dns.com'))) {
-      return true;
-    }
-  } catch (e) {
-    try {
-      const ips = await dns.resolve4(domain);
-      if (ips.includes('76.76.21.21')) {
-        return true;
-      }
-    } catch (e2) {}
-  }
-  return false;
-}
-
 export async function GET() {
   const db = readDb();
-  const enriched = db.domains.map((d: any) => ({
+  const enriched = (db.domains || []).map((d: any) => ({
     ...d,
     hostname: d.hostname || d.domain,
     cnameTarget: d.cnameTarget || DEFAULT_CNAME_TARGET,
@@ -39,27 +21,29 @@ export async function POST(req: NextRequest) {
     const rawDomain = String(body.hostname || body.domain || '')
       .trim()
       .toLowerCase()
-      .replace(/^https?:\/\//, '')
+      .replace(/^[a-z]+:\/\//i, '')
       .replace(/\/.*$/, '');
 
-    if (!rawDomain) {
+    if (!rawDomain || !rawDomain.includes('.') || rawDomain.length < 3) {
       return NextResponse.json(
-        { error: { message: 'Informe um domínio válido.' } },
+        { error: { message: 'Informe um domínio ou subdomínio válido (ex: track.seudominio.com).' } },
         { status: 400 }
       );
     }
 
     const db = readDb();
+    if (!Array.isArray(db.domains)) {
+      db.domains = [];
+    }
+
     const existing = db.domains.find((d: any) => (d.hostname || d.domain) === rawDomain);
     if (existing) {
       return NextResponse.json(
-        { error: { message: 'Este domínio já está cadastrado.' } },
+        { error: { message: 'Este domínio já está cadastrado na sua lista.' } },
         { status: 400 }
       );
     }
 
-    // Verify DNS immediately upon adding
-    const isPointed = await checkDomainDns(rawDomain);
     const now = new Date().toISOString();
 
     const record = {
@@ -68,23 +52,23 @@ export async function POST(req: NextRequest) {
       domain: rawDomain,
       hostname: rawDomain,
       cnameTarget: DEFAULT_CNAME_TARGET,
-      status: (isPointed ? 'ACTIVE' : 'PENDING') as 'ACTIVE' | 'PENDING',
-      errorMessage: isPointed
-        ? null
-        : `Aponte o CNAME para ${DEFAULT_CNAME_TARGET} e clique em Verificar DNS.`,
+      status: 'PENDING' as const,
+      errorMessage: `Aponte o CNAME para ${DEFAULT_CNAME_TARGET} e depois clique em Verificar DNS.`,
       changesMonth: now.slice(0, 7),
-      changesCount: 1,
+      changesCount: 0,
       operationKey: crypto.randomBytes(12).toString('base64url'),
       createdAt: now,
       updatedAt: now,
     };
 
+    // Add without any artificial limits (unlimited domains)
     db.domains.unshift(record);
     writeDb(db);
-    return NextResponse.json({ data: record });
+
+    return NextResponse.json({ data: record, success: true });
   } catch (err: any) {
     return NextResponse.json(
-      { error: { message: err?.message || 'Falha ao registrar domínio.' } },
+      { error: { message: err?.message || 'Falha ao adicionar domínio.' } },
       { status: 400 }
     );
   }

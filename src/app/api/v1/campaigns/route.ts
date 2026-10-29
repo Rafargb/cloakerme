@@ -4,7 +4,7 @@ import { enrichCampaign, slugifyName } from '@/lib/campaign-utils';
 
 export async function GET(req: NextRequest) {
   const db = readDb();
-  const limit = Number(req.nextUrl.searchParams.get('limit') || 100);
+  const limit = Number(req.nextUrl.searchParams.get('limit') || 10000);
   const page = Number(req.nextUrl.searchParams.get('page') || 1);
   const enriched = db.campaigns.slice(0, limit).map((c) => enrichCampaign(c, db));
   return NextResponse.json({
